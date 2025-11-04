@@ -14,7 +14,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../constants/colors";
-import { auth, db } from "../firebase";
+import { auth, db } from "../firebase/firebase";
 import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 
 export default function HotelDetails({ route, navigation }) {

@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { signOut, updateProfile } from "firebase/auth";
-import { auth, db } from "../firebase";
+import { auth, db } from "../firebase/firebase";
 import { COLORS } from "../constants/colors";
 import { doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
 

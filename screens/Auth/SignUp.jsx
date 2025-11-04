@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { auth, db } from "../../firebase";
+import { auth, db } from "../../firebase/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import { COLORS } from "../../constants/colors";
 

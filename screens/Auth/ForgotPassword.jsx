@@ -15,7 +15,7 @@ export default function ForgotPassword({ navigation }) {
     try {
       await sendPasswordResetEmail(auth, email);
       Alert.alert("Success", "Password reset email sent!");
-      navigation.navigate("SignIn");
+      navigation.navigate("Login");
     } catch (error) {
       Alert.alert("Failed", error.message);
     } finally {
