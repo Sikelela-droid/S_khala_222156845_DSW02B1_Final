@@ -12,8 +12,10 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { signOut, updateProfile } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { COLORS } from "../constants/colors";
+import { doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
+
 
 export default function Profile({ navigation }) {
   const [user, setUser] = useState(null);
@@ -32,9 +34,38 @@ export default function Profile({ navigation }) {
     },
   ]);
 
+  
   useEffect(() => {
-    setUser(auth.currentUser);
+    const user = auth.currentUser;
+    if (!user) return;
+
+    // Fetch user info
+    const docRef = doc(db, "users", user.uid);
+    const unsubscribeUser = onSnapshot(docRef, (snap) => {
+      if (snap.exists()) {
+        setUser({ ...user, ...snap.data() });
+      }
+    });
+
+  // Fetch bookings in real time
+    const bookingsRef = collection(db, "users", user.uid, "bookings");
+    const unsubscribeBookings = onSnapshot(bookingsRef, (snapshot) => {
+      const fetchedBookings = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        dates: `${new Date(doc.data().checkIn).toDateString()} – ${new Date(
+          doc.data().checkOut
+        ).toDateString()}`,
+      }));
+      setBookings(fetchedBookings);
+    });
+
+    return () => {
+      unsubscribeUser();
+      unsubscribeBookings();
+    };
   }, []);
+
 
   const handleUpdate = async () => {
     if (!newName) {
@@ -43,6 +74,11 @@ export default function Profile({ navigation }) {
     }
     try {
       await updateProfile(auth.currentUser, { displayName: newName });
+
+      // Update Firestore as well
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      await updateDoc(userRef, { name: newName });
+
       setUser({ ...auth.currentUser, displayName: newName });
       setEditModal(false);
       Alert.alert("Success", "Profile updated!");
@@ -50,6 +86,7 @@ export default function Profile({ navigation }) {
       Alert.alert("Error", error.message);
     }
   };
+
 
   const handleLogout = async () => {
     try {

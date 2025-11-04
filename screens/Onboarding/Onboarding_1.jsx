@@ -1,4 +1,3 @@
-// screens/Onboarding/Onboarding1.jsx
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
@@ -10,7 +9,7 @@ export default function Onboarding1({ navigation }) {
   return (
     <LinearGradient colors={[COLORS.primaryDark, COLORS.primary]} style={styles.container}>
       <Image
-        source={require("../../assets/onboard1.jpg")} // 👈 replace with your own image
+        source={require("../../assets/Materials/01-Onboarding Page/Onboarding 1.png")}
         style={styles.image}
         resizeMode="cover"
       />

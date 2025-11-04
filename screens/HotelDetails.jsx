@@ -1,5 +1,5 @@
 // screens/HotelDetails.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -14,33 +14,54 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS } from "../constants/colors";
+import { auth, db } from "../firebase";
+import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 
 export default function HotelDetails({ route, navigation }) {
   const { hotel } = route.params;
-  const [reviews, setReviews] = useState([
-    { id: 1, name: "Thabo", rating: 5, text: "Amazing experience and friendly staff!" },
-    { id: 2, name: "Anele", rating: 4, text: "Clean rooms and great location!" },
-  ]);
+  const [reviews, setReviews] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(0);
 
-  const handleAddReview = () => {
+  const user = auth.currentUser;
+
+  // 🔹 Fetch reviews in real-time
+  useEffect(() => {
+    const reviewsRef = collection(db, "hotels", hotel.id.toString(), "reviews");
+    const q = query(reviewsRef, orderBy("timestamp", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const fetchedReviews = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setReviews(fetchedReviews);
+    });
+
+    return () => unsubscribe();
+  }, [hotel.id]);
+
+  // 🔹 Add review to Firestore
+  const handleAddReview = async () => {
     if (!reviewText || reviewRating === 0) {
       Alert.alert("Error", "Please add both a rating and comment.");
       return;
     }
 
-    const newReview = {
-      id: Date.now(),
-      name: "You",
-      rating: reviewRating,
-      text: reviewText,
-    };
-    setReviews([newReview, ...reviews]);
-    setShowModal(false);
-    setReviewText("");
-    setReviewRating(0);
+    try {
+      await addDoc(collection(db, "hotels", hotel.id.toString(), "reviews"), {
+        userId: user.uid,
+        name: user.displayName || "Anonymous",
+        rating: reviewRating,
+        text: reviewText,
+        timestamp: new Date(),
+      });
+
+      setShowModal(false);
+      setReviewText("");
+      setReviewRating(0);
+      Alert.alert("Success", "Review submitted!");
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
   };
 
   return (

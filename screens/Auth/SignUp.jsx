@@ -1,4 +1,3 @@
-// screens/Auth/SignUp.jsx
 import React, { useState } from "react";
 import {
   View,
@@ -9,6 +8,7 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
@@ -35,25 +35,37 @@ export default function SignUp({ navigation }) {
 
     setLoading(true);
     try {
+      // 1️⃣ Create Auth user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // 2️⃣ Update Auth profile with displayName
       await updateProfile(userCredential.user, { displayName: name });
 
-      // create Firestore profile
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        uid: userCredential.user.uid,
+      // 3️⃣ Create Firestore user document
+      await setDoc(doc(db, "users", uid), {
+        uid,
         name,
         email,
+        createdAt: new Date().toISOString(),
+        bookings: [], // initialize bookings as empty array
       });
 
+      // 4️⃣ Navigate to main tabs
       navigation.replace("MainTabs");
     } catch (error) {
-      Alert.alert("Sign Up Failed", error.message);
+      // Optional: improved error messages
+      if (error.code === "auth/email-already-in-use") {
+        Alert.alert("Error", "This email is already registered");
+      } else {
+        Alert.alert("Sign Up Failed", error.message);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  return (
+  return ( 
     <LinearGradient colors={[COLORS.primary, COLORS.primaryLight]} style={styles.container}>
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={styles.card}>
         <Text style={styles.title}>Create Account</Text>
@@ -89,7 +101,7 @@ export default function SignUp({ navigation }) {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>Already have an account? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
             <Text style={styles.link}>Sign In</Text>
           </TouchableOpacity>
         </View>

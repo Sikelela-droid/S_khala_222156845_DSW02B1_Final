@@ -1,9 +1,8 @@
-// screens/Auth/ForgotPassword.jsx
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../../firebase";
+import { auth } from "../../firebase/firebase";
 import { COLORS } from "../../constants/colors";
 
 export default function ForgotPassword({ navigation }) {
@@ -43,7 +42,7 @@ export default function ForgotPassword({ navigation }) {
           <Text style={styles.buttonText}>{loading ? "Sending..." : "Send Reset Email"}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate("SignIn")}>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
           <Text style={styles.link}>Back to Sign In</Text>
         </TouchableOpacity>
       </View>

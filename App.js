@@ -1,11 +1,11 @@
 // App.js
 import React, { useEffect, useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
-import AppNavigator from "./navigation/AppNavigator";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth } from "./firebase/firebase";
+import AppNavigator from "./navigation/AppNavigator";
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -13,27 +13,35 @@ export default function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-    const checkOnboarding = async () => {
+
+    const testDB = async () => {
+      const snapshot = await getDocs(collection(db, "users"));
+      console.log("Firestore connection OK:", snapshot.size);
+    };
+    testDB();
+    
+    const init = async () => {
       const seen = await AsyncStorage.getItem("hasSeenOnboarding");
       if (!seen) setShowOnboarding(true);
-      setLoading(false);
+
+      // listen for auth changes
+      const unsub = onAuthStateChanged(auth, async (usr) => {
+        setUser(usr);
+        if (usr) await AsyncStorage.setItem("userToken", usr.uid);
+        else await AsyncStorage.removeItem("userToken");
+        setLoading(false);
+      });
+      return unsub;
     };
-    checkOnboarding();
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-    });
-
-    return unsubscribe;
+    init();
   }, []);
 
-  if (loading) {
+  if (loading)
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#6A0DAD" />
       </View>
     );
-  }
 
   return (
     <NavigationContainer>

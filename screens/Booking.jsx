@@ -12,6 +12,8 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { LinearGradient } from "expo-linear-gradient";
 import { COLORS } from "../constants/colors";
+import { auth, db } from "../firebase/firebase";
+import { doc, collection, addDoc } from "firebase/firestore";
 
 export default function Booking({ route, navigation }) {
   const { hotel } = route.params;
@@ -28,13 +30,33 @@ export default function Booking({ route, navigation }) {
     return hotel.price * days * parseInt(rooms || 1);
   };
 
-  const handleBooking = () => {
+  const handleBooking = async () => {
     if (checkOut <= checkIn) {
       Alert.alert("Invalid Dates", "Check-out must be after check-in");
       return;
     }
 
-    setConfirmed(true);
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        Alert.alert("Error", "You must be logged in to book a hotel");
+        return;
+      }
+
+    // Save booking under users/{uid}/bookings
+      await addDoc(collection(db, "users", user.uid, "bookings"), {
+        hotelId: hotel.id,
+        hotelName: hotel.name,
+        checkIn: checkIn.toISOString(),
+        checkOut: checkOut.toISOString(),
+        rooms: parseInt(rooms),
+        createdAt: new Date(),
+      });
+
+      setConfirmed(true);
+    } catch (error) {
+      Alert.alert("Booking Failed", error.message);
+    }
   };
 
   return (

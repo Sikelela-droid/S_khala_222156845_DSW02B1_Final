@@ -21,7 +21,7 @@ export default function Explore({ navigation }) {
       location: "Sandton, Johannesburg",
       rating: 4.8,
       price: 1200,
-      image: require("../assets/hotel1.jpg"),
+      image: require("../assets/Materials/06-Explore Page/image-13.png"),
     },
     {
       id: "2",
@@ -29,7 +29,7 @@ export default function Explore({ navigation }) {
       location: "Durban Beachfront",
       rating: 4.6,
       price: 950,
-      image: require("../assets/hotel2.jpg"),
+      image: require("../assets/Materials/06-Explore Page/image-4.png"),
     },
     {
       id: "3",
@@ -37,7 +37,7 @@ export default function Explore({ navigation }) {
       location: "Drakensberg",
       rating: 4.9,
       price: 1750,
-      image: require("../assets/hotel3.jpg"),
+      image: require("../assets/Materials/06-Explore Page/rectangle 783.png"),
     },
   ]);
 
