@@ -1,4 +1,3 @@
-// screens/Explore.jsx
 import React, { useState } from "react";
 import {
   View,
@@ -44,12 +43,10 @@ export default function Explore({ navigation }) {
   const [sortBy, setSortBy] = useState("rating");
   const [search, setSearch] = useState("");
 
-  // Sorting logic
   const sortedHotels = [...hotels].sort((a, b) =>
     sortBy === "price" ? a.price - b.price : b.rating - a.rating
   );
 
-  // Filter by search term
   const filteredHotels = sortedHotels.filter((hotel) =>
     hotel.name.toLowerCase().includes(search.toLowerCase())
   );

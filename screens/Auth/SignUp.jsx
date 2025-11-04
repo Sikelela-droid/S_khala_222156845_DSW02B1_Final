@@ -35,26 +35,21 @@ export default function SignUp({ navigation }) {
 
     setLoading(true);
     try {
-      // 1️⃣ Create Auth user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
 
-      // 2️⃣ Update Auth profile with displayName
       await updateProfile(userCredential.user, { displayName: name });
 
-      // 3️⃣ Create Firestore user document
       await setDoc(doc(db, "users", uid), {
         uid,
         name,
         email,
         createdAt: new Date().toISOString(),
-        bookings: [], // initialize bookings as empty array
+        bookings: [], 
       });
 
-      // 4️⃣ Navigate to main tabs
       navigation.replace("MainTabs");
     } catch (error) {
-      // Optional: improved error messages
       if (error.code === "auth/email-already-in-use") {
         Alert.alert("Error", "This email is already registered");
       } else {

@@ -1,4 +1,3 @@
-// App.js
 import React, { useEffect, useState } from "react";
 import { View, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -13,18 +12,16 @@ export default function App() {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
-
     const testDB = async () => {
       const snapshot = await getDocs(collection(db, "users"));
       console.log("Firestore connection OK:", snapshot.size);
     };
     testDB();
-    
+
     const init = async () => {
       const seen = await AsyncStorage.getItem("hasSeenOnboarding");
       if (!seen) setShowOnboarding(true);
 
-      // listen for auth changes
       const unsub = onAuthStateChanged(auth, async (usr) => {
         setUser(usr);
         if (usr) await AsyncStorage.setItem("userToken", usr.uid);
@@ -36,6 +33,8 @@ export default function App() {
     init();
   }, []);
 
+  const handleFinishOnboarding = () => setShowOnboarding(false);
+
   if (loading)
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -45,7 +44,11 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <AppNavigator user={user} showOnboarding={showOnboarding} />
+      <AppNavigator
+        user={user}
+        showOnboarding={showOnboarding}
+        onFinishOnboarding={handleFinishOnboarding} 
+      />
     </NavigationContainer>
   );
 }

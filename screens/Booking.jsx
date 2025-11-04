@@ -1,4 +1,3 @@
-// screens/Booking.jsx
 import React, { useState } from "react";
 import {
   View,

@@ -7,9 +7,10 @@ import { COLORS } from "../../constants/colors";
 const { width, height } = Dimensions.get("window");
 
 export default function Onboarding3({ navigation }) {
+  
   const handleGetStarted = async () => {
     await AsyncStorage.setItem("hasSeenOnboarding", "true");
-    navigation.replace("AuthStack");
+    if (onFinish) onFinish(); 
   };
 
   return (

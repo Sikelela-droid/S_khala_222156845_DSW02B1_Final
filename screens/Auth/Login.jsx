@@ -1,4 +1,3 @@
-// screens/Auth/SignIn.jsx
 import React, { useState } from "react";
 import {
   View,
@@ -29,7 +28,7 @@ export default function SignIn({ navigation }) {
     setLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      navigation.replace("MainTabs");
+      navigation.navigate("Explore");
     } catch (error) {
       Alert.alert("Login Failed", error.message);
     } finally {
