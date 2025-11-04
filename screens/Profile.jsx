@@ -1,4 +1,3 @@
-// screens/Profile.jsx
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -14,7 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { signOut, updateProfile } from "firebase/auth";
 import { auth, db } from "../firebase/firebase";
 import { COLORS } from "../constants/colors";
-import { doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, updateDoc, onSnapshot, collection } from "firebase/firestore";
 
 
 export default function Profile({ navigation }) {
@@ -39,7 +38,6 @@ export default function Profile({ navigation }) {
     const user = auth.currentUser;
     if (!user) return;
 
-    // Fetch user info
     const docRef = doc(db, "users", user.uid);
     const unsubscribeUser = onSnapshot(docRef, (snap) => {
       if (snap.exists()) {
@@ -47,7 +45,6 @@ export default function Profile({ navigation }) {
       }
     });
 
-  // Fetch bookings in real time
     const bookingsRef = collection(db, "users", user.uid, "bookings");
     const unsubscribeBookings = onSnapshot(bookingsRef, (snapshot) => {
       const fetchedBookings = snapshot.docs.map((doc) => ({
@@ -75,7 +72,6 @@ export default function Profile({ navigation }) {
     try {
       await updateProfile(auth.currentUser, { displayName: newName });
 
-      // Update Firestore as well
       const userRef = doc(db, "users", auth.currentUser.uid);
       await updateDoc(userRef, { name: newName });
 
@@ -142,7 +138,6 @@ export default function Profile({ navigation }) {
         </Text>
       )}
 
-      {/* Edit Profile Modal */}
       <Modal visible={editModal} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>

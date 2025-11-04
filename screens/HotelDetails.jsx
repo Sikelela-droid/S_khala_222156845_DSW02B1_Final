@@ -1,4 +1,3 @@
-// screens/HotelDetails.jsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -26,7 +25,6 @@ export default function HotelDetails({ route, navigation }) {
 
   const user = auth.currentUser;
 
-  // 🔹 Fetch reviews in real-time
   useEffect(() => {
     const reviewsRef = collection(db, "hotels", hotel.id.toString(), "reviews");
     const q = query(reviewsRef, orderBy("timestamp", "desc"));
@@ -39,7 +37,6 @@ export default function HotelDetails({ route, navigation }) {
     return () => unsubscribe();
   }, [hotel.id]);
 
-  // 🔹 Add review to Firestore
   const handleAddReview = async () => {
     if (!reviewText || reviewRating === 0) {
       Alert.alert("Error", "Please add both a rating and comment.");
