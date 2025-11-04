@@ -2,6 +2,7 @@
   "expo": {
     "name": "S_khala_222156845_DSW02B1_Final",
     "slug": "S_khala_222156845_DSW02B1_Final",
+    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
